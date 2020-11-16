@@ -3,6 +3,7 @@ package com.mytwitterstream.sink;
 import com.google.gson.Gson;
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -20,6 +21,7 @@ public class MongoSink implements TwitterSink {
     private MongoDatabase db;
     private MongoCollection<Document> collection;
     private Long uniqueCount; //Todo Handle overflow
+    private Long uniqueCountThisSession;
     private Long prevUniqueCount;
     private Timer timer;
 
@@ -29,21 +31,22 @@ public class MongoSink implements TwitterSink {
         {
             if(prevUniqueCount < uniqueCount)
             {
-                logger.info("Total Unique tweets consumed: ",uniqueCount.toString());
+                logger.info("Total Unique tweets in mongo collection: ",uniqueCount.toString());
+                logger.info("Total Unique tweets in current session: ",uniqueCountThisSession.toString());
             }
             prevUniqueCount = uniqueCount;
         }
     }
 
-    public MongoSink(String host,int port,String db,String collection)
+    public MongoSink(String URI,String db,String collection)
     {
         this.logger = Logger.getLogger(MongoSink.class);
-        this.mongo = new MongoClient(host, port);
+        this.mongo = new MongoClient(new MongoClientURI(URI));
         this.db = this.mongo.getDatabase(db);
         this.collection=this.db.getCollection(collection);
-        this.uniqueCount = this.collection.countDocuments(); // This can be initialized to 0 if we need the unique count for the current session.
+        this.uniqueCount = this.collection.countDocuments();
+        this.uniqueCountThisSession=0l;
         this.prevUniqueCount = this.collection.countDocuments();
-
         this.timer = new Timer();
         TimerTask logUniqueCountTask = new LogUniqueCountTask();
         timer.schedule(logUniqueCountTask, 0,1000);  // 2000 - delay (can set to 0 for immediate execution), 5000 is a frequency.
@@ -59,6 +62,7 @@ public class MongoSink implements TwitterSink {
         try{
             collection.insertOne(doc);
             this.uniqueCount += 1;
+            this.uniqueCountThisSession += 1;
         }
         catch(MongoWriteException e)
         {

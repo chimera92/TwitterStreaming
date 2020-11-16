@@ -118,7 +118,7 @@ public class MyTwitterClient {
                         }
                     }
             } while (result == null || (query = result.nextQuery()) != null  );
-    }
+}
 
 
 
