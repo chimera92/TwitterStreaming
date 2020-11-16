@@ -5,7 +5,7 @@ Twitter streaming Java App streaming tweets to MongoDb
 - Reads tweets from the Twitter streaming API using twitter4j
 - Applies filters to remove tweets not needed
 - Write the tweets to MongoDb collection with TweetId as primary key.
-- Logs distinct and total tweet consumed count.
+- Logs the distinct and total counts of tweets consumed.
 
 **Runing the App locally:**
 
