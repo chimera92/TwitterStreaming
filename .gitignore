@@ -1,0 +1,14 @@
+.classpath
+.idea
+.idea/**
+.project
+**/*.iml
+settings.xml
+**/target
+**/*.tar.gz
+dino-core/dino-core
+**/.DS_Store
+**/.settings
+.cache-main
+.cache-tests
+*.iml
