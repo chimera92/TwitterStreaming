@@ -11,8 +11,9 @@ import java.util.Properties;
  */
 public class SearchTweetsApp {
     /**
-     * Usage: java com.mytwitterstream.SearchTweets [query]
-     *
+     * Usage:
+     * mvn clean install
+     * java -jar ./target/TwitterStreaming-1.0-SNAPSHOT-shaded.jar <properties file name in resources folder>
      * @param args search query
      *
      */
@@ -37,21 +38,21 @@ public class SearchTweetsApp {
 
         try{
 
-            MyTwitterClient twitterConnectionHandler= new MyTwitterClient(prop.getProperty("consumerkey"),
-                    prop.getProperty("consumersecret"),
-                    prop.getProperty("accesstoken"),
-                    prop.getProperty("accesstokensecret"));
+            MyTwitterClient myTwitterClient= new MyTwitterClient(prop.getProperty("twitterapikey"),
+                    prop.getProperty("twitterapirsecret"),
+                    prop.getProperty("twitteraccesstoken"),
+                    prop.getProperty("twitteraccesstokensecret"));
 
 
 
-        twitterConnectionHandler.addSink(mongoSink);
+        myTwitterClient.addSink(mongoSink);
         //twitterConnectionHandler.addSink(new ConsoleSink()); // Additional sinks can be added this way
         MusicFilter musicFilter = new MusicFilter();
         musicFilter.addToken("music");
         musicFilter.addToken("song");
-        twitterConnectionHandler.addFilter(musicFilter);
+        myTwitterClient.addFilter(musicFilter);
 
-        twitterConnectionHandler.startSearchTweets(prop.getProperty("search.term"));
+        myTwitterClient.startSearchTweets(prop.getProperty("search.term"));
 
         }
         finally {

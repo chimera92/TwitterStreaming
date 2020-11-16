@@ -95,16 +95,9 @@ public class MyTwitterClient {
                     logger.info("Total Tweets consumed in current session: ",tweetsConsumedCount.toString());
 
                     List<Status> tweets = result.getTweets();
-                    for (Status tweet : tweets) {
 
-                        TweetPojo tweetPojo = twitter4jStatusToTweetPojo(tweet);
-                        if(isFiltered(tweetPojo)) {
-                            logger.info("Tweet filtered out! Id: ",tweetPojo.getId().toString());
-                            continue ;
-                        }
-                        writeTweetToSinks(tweetPojo);
+                    processTweets(tweets);
 
-                    }
                 }catch (TwitterException te) {
 
                         if(te.exceededRateLimitation())
@@ -118,9 +111,19 @@ public class MyTwitterClient {
                         }
                     }
             } while (result == null || (query = result.nextQuery()) != null  );
-}
+    }
 
+    public void processTweets(List<Status> tweets) {
+        for (Status tweet : tweets) {
 
+            TweetPojo tweetPojo = twitter4jStatusToTweetPojo(tweet);
+            if(isFiltered(tweetPojo)) {
+                logger.info("Tweet filtered out! Id: ",tweetPojo.getId().toString());
+                continue ;
+            }
+            writeTweetToSinks(tweetPojo);
 
+        }
+    }
 
 }
